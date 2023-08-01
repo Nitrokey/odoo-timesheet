@@ -45,7 +45,6 @@ class HrTimesheetSheet(models.Model):
 
     total_attendance = fields.Float(
         compute="_compute_attendance_time",
-        string="Total Attendance",
     )
     total_difference = fields.Float(
         compute="_compute_attendance_time",
@@ -57,9 +56,7 @@ class HrTimesheetSheet(models.Model):
     attendance_state = fields.Selection(
         related="employee_id.attendance_state", string="Current Status"
     )
-    attendance_count = fields.Integer(
-        compute="_compute_attendance_count", string="Attendance Count"
-    )
+    attendance_count = fields.Integer(compute="_compute_attendance_count")
 
     def attendance_action_change(self):
         """Call attendance_action_change to
