@@ -64,26 +64,28 @@ class HrAttendance(models.Model):
         for attendance in self:
             attendance._check_timesheet_state()
 
-        return super(HrAttendance, self).unlink()
+        return super().unlink()
 
     @api.constrains("check_in", "check_out")
     def _check_timesheet(self):
         """- Restrict to create attendance in confirmed timesheet-sheet
         - Restrict to add attendance date outside the current
         timesheet dates"""
-        timesheet = self.sheet_id
-        if not timesheet:
-            return
-        if timesheet and timesheet.state != "draft":
-            raise UserError(
-                _(
-                    "You can not enter an attendance in a submitted timesheet. "
-                    + "Ask your manager to reset it before adding attendance."
+        for sheet in self:
+            timesheet = sheet.sheet_id
+            if not timesheet:
+                continue
+
+            if timesheet and timesheet.state != "draft":
+                raise UserError(
+                    _(
+                        "You can not enter an attendance in a submitted timesheet. "
+                        "Ask your manager to reset it before adding attendance."
+                    )
                 )
-            )
-        else:
-            checkin_tz_date = self._get_attendance_employee_tz(date=self.check_in)
-            checkout_tz_date = self._get_attendance_employee_tz(date=self.check_out)
+
+            checkin_tz_date = sheet._get_attendance_employee_tz(date=sheet.check_in)
+            checkout_tz_date = sheet._get_attendance_employee_tz(date=sheet.check_out)
             if (
                 (
                     timesheet.date_start > checkin_tz_date
@@ -98,6 +100,6 @@ class HrAttendance(models.Model):
                 raise UserError(
                     _(
                         "You can not enter an attendance date "
-                        + "outside the current timesheet dates."
+                        "outside the current timesheet dates."
                     )
                 )

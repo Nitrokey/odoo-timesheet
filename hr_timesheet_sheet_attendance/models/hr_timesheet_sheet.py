@@ -54,7 +54,9 @@ class HrTimesheetSheet(models.Model):
         comodel_name="hr.attendance", inverse_name="sheet_id", string="Attendances"
     )
     attendance_state = fields.Selection(
-        related="employee_id.attendance_state", related_sudo=True, string="Current Status"
+        related="employee_id.attendance_state",
+        related_sudo=True,
+        string="Current Status",
     )
     attendance_count = fields.Integer(compute="_compute_attendance_count")
 
@@ -67,7 +69,7 @@ class HrTimesheetSheet(models.Model):
 
     def action_timesheet_confirm(self):
         self.check_employee_attendance_state()
-        return super(HrTimesheetSheet, self).action_timesheet_confirm()
+        return super().action_timesheet_confirm()
 
     def check_employee_attendance_state(self):
         """Restrict to submit sheet contains
@@ -81,13 +83,13 @@ class HrTimesheetSheet(models.Model):
             raise UserError(
                 _(
                     "The timesheet cannot be validated as it does "
-                    + "not contain an equal number of sign ins and sign outs."
+                    "not contain an equal number of sign ins and sign outs."
                 )
             )
 
     @api.model
     def create(self, vals):
-        res = super(HrTimesheetSheet, self).create(vals)
+        res = super().create(vals)
         attendances = self.env["hr.attendance"].search(
             [
                 ("employee_id", "=", res.employee_id.id),
