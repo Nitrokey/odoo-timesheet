@@ -31,7 +31,7 @@ class HrAttendance(models.Model):
         if self.check_in:
             check_in = self._get_attendance_employee_tz(date=self.check_in)
 
-        domain = [("employee_id", "=", self.employee_id.id)]
+        domain = [("employee_id", "=", self.employee_id.id), ("state", "=", "draft")]
         if check_in:
             domain += [("date_start", "<=", check_in), ("date_end", ">=", check_in)]
 
